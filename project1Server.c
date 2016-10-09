@@ -2,7 +2,7 @@
 // CS 455
 // Project 1: Protocols and Encodings
 
-#include "header.h"
+#include "project1.h"
 
 struct sockaddr_in serv_addr, cli_addr, tmp_addr;  // struct containing addr
 struct hostent *hp;   							   // defines host comp
@@ -32,7 +32,7 @@ int server_init(char* argv[])
 	printf("Creating a TCP socket...\n");
 	
 	// domain=>IPv4, type=>stream, protocol=>OS choose TCP for stream socket
-	sock = socket(AF_INET, SOCK_STREAM, 0); 
+	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); 
 	if (sock < 0)
 	{
 		printf("Error: Failed to create socket.\n");
@@ -66,8 +66,6 @@ int server_init(char* argv[])
 
    	servPort = ntohs(tmp_addr.sin_port);
    	printf("\tPort=%d\n", servPort);
-
-   	db_populate();
    	
    	printf("------------------ server init done ------------------\n");
 }

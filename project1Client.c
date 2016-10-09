@@ -2,7 +2,7 @@
 // CS 455
 // Project 1: Protocols and Encodings
 
-#include "header.h"
+#include "project1.h"
 
 struct hostent *hp;              
 struct sockaddr_in  server_addr; 
@@ -54,7 +54,7 @@ int client_init(char *argv[])
   	}
 
   	printf("Successfully connected to \007\n"); 
-  	printf("\thostname=localhost  IP=127.0.0.1  port=%d\n", SERVER_PORT);  
+  	printf("\thostname=%s  IP=%d  port=%d\n", servname, SERVER_IP, SERVER_PORT);  
 
   	printf("------------------ client init done ------------------\n");
 }
