@@ -1,7 +1,21 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>  //uint16_t
+#include <string.h>
+#include <sys/socket.h>
+
+#include <sys/types.h>
+#include <errno.h>
+
+#include <sys/stat.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
 typedef struct {
 unsigned cmd;
 char *arg;
 } command;
+
 #define nullTerminatedCmd (1)
 #define givenLengthCmd (2)
 #define badIntCmd (3)
@@ -9,6 +23,7 @@ char *arg;
 #define byteAtATimeCmd (5)
 #define kByteAtATimeCmd (6)
 #define noMoreCommands (0)
+
 /* This is the list of commands to be run by the client to demonstrate your program */
 static command commands[] = {
 {nullTerminatedCmd, "Sent as a null-terminated string"},

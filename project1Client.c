@@ -1,63 +1,106 @@
-using System; // For String, Int32, Console, ArgumentException
-1 using System.Text; // For Encoding
-2 using System.IO; // For IOException
-3 using System.Net.Sockets; // For TcpClient, NetworkStream, SocketException
-4
-5 class TcpEchoClient {
-6
-18 Chapter 2: Basic Sockets ■
-7 static void Main(string[] args) {
-8
-9 if ((args.Length < 2) || (args.Length > 3)) { // Test for correct # of args
-10 throw new ArgumentException("Parameters: <Server> <Word> [<Port>]");
-11 }
-12
-13 String server = args[0]; // Server name or IP address
-14
-15 // Convert input String to bytes
-16 byte[] byteBuffer = Encoding.ASCII.GetBytes(args[1]);
-17
-18 // Use port argument if supplied, otherwise default to 7
-19 int servPort = (args.Length == 3) ? Int32.Parse(args[2]) : 7;
-20
-21 TcpClient client = null;
-22 NetworkStream netStream = null;
-23
-24 try {
-25 // Create socket that is connected to server on specified port
-26 client = new TcpClient(server, servPort);
-27
-28 Console.WriteLine("Connected to server... sending echo string");
-29
-30 netStream = client.GetStream();
-31
-32 // Send the encoded string to the server
-33 netStream.Write(byteBuffer, 0, byteBuffer.Length);
-34
-35 Console.WriteLine("Sent {0} bytes to server...", byteBuffer.Length);
-36
-37 int totalBytesRcvd = 0; // Total bytes received so far
-38 int bytesRcvd = 0; // Bytes received in last read
-39
-40 // Receive the same string back from the server
-41 while (totalBytesRcvd < byteBuffer.Length) {
-42 if ((bytesRcvd = netStream.Read(byteBuffer, totalBytesRcvd,
-43 byteBuffer.Length - totalBytesRcvd)) == 0) {
-44 Console.WriteLine("Connection closed prematurely.");
-45 break;
-46 }
-47 totalBytesRcvd += bytesRcvd;
-48 }
-49
-■ 2.3 TCP Sockets 19
-50 Console.WriteLine("Received {0} bytes from server: {1}", totalBytesRcvd,
-51 Encoding.ASCII.GetString(byteBuffer, 0, totalBytesRcvd));
-52
-53 } catch (Exception e) {
-54 Console.WriteLine(e.Message);
-55 } finally {
-56 netStream.Close();
-57 client.Close();
-58 }
-59 }
-60 }
+// Adam Berenter and Mike Marelli
+// CS 455
+// Project 1: Protocols and Encodings
+
+#include "header.h"
+
+struct hostent *hp;              
+struct sockaddr_in  server_addr; 
+int sock, r;
+int SERVER_IP, SERVER_PORT; 
+
+// Initialize client
+int client_init(char *argv[])
+{
+	char servname[MAX], servport[MAX];
+	
+	printf("-------------------- client  init --------------------\n");
+	
+	// assign server name and port from command line
+	strcpy(servname, argv[1]); 
+	strcpy(servport, argv[2]); 
+
+  	printf("Retrieving server info...\n");
+  	hp = gethostbyname(servname);
+  	if (!hp)
+	{
+     	printf("Error: Unknown host %s.\n", argv[1]);
+     	exit(1);
+  	}
+
+  	SERVER_IP = *(long *)hp->h_addr;
+  	SERVER_PORT = atoi(servport);
+
+  	printf("Creating a TCP socket...\n");
+  	sock = socket(AF_INET, SOCK_STREAM, 0);
+  	if (sock < 0)
+	{
+  	   printf("Error: Failed to create socket.\n");
+  	   exit(2);
+  	}
+
+  	printf("Populating server_addr with server's IP and port#...\n");
+  	server_addr.sin_family = AF_INET;
+  	server_addr.sin_addr.s_addr = SERVER_IP;
+  	server_addr.sin_port = htons(SERVER_PORT);
+
+  	// Connect to server
+ 	printf("Connecting to server...\n");
+ 	r = connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
+ 	if (r < 0)
+	{
+     	printf("Error: Connect failed\n");
+     	exit(1);
+  	}
+
+  	printf("Successfully connected to \007\n"); 
+  	printf("\thostname=localhost  IP=127.0.0.1  port=%d\n", SERVER_PORT);  
+
+  	printf("------------------ client init done ------------------\n");
+}
+
+// MAIN
+main(int argc, char *argv[ ])
+{
+	int n;                             // num bytes sent/recvd
+	uint16_t passlen, final_msglen, nbo;
+	char inbuf[MAX];                   // multipurpose inbuffer
+	char id[MAX], name[MAX], password[MAX], final_msg[MAX];   
+
+	if (argc < 3)
+	{
+		printf("Usage: ./client serverName serverPort\n");
+		exit(1);
+	}
+
+	// initialize client
+	client_init(argv);
+	
+	while (1)
+	{
+		// recv the welcome message in inbuf
+		n = recv_all(sock, inbuf, MAX-1, 0);
+		inbuf[n] = 0;   // null terminate for printing
+
+		// check if inbuf is welcome message
+		if (strcmp(inbuf, "Welcome"))
+		{
+	 		// close connection, print error, and exit
+	 		printf("ERROR! UNEXPECTED RESPONSE FROM SERVER!\n");
+	 		printf("Exiting...");
+	 		exit(1);
+		}
+
+		// Run calls here
+		while (!noMoreCommands)
+		{
+
+		}
+
+		// close socket		
+		close(sock);
+
+		// exit
+		exit(0);
+	}
+}
