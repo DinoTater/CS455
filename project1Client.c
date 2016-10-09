@@ -65,7 +65,7 @@ main(int argc, char *argv[ ])
 	int n;                             // num bytes sent/recvd
 	uint16_t passlen, final_msglen, nbo;
 	char inbuf[MAX];                   // multipurpose inbuffer
-	char id[MAX], name[MAX], password[MAX], final_msg[MAX];   
+	char command[], msg[];
 
 	if (argc < 3)
 	{
@@ -94,7 +94,28 @@ main(int argc, char *argv[ ])
 		// Run calls here
 		while (!noMoreCommands)
 		{
+			printf("cmd: ");
+			bzero(command, MAX);
+			fgets(command, MAX, stdin);
 
+			switch(command):
+				case nullTerminatedCmd:
+					send(sock, echoString, echoStringLen, 0)
+					break;
+				case givenLengthCmd:
+					send(sock, echoString, echoStringLen, 0)
+					break;				
+				case badIntCmd:
+					break;				
+				case goodIntCmd:
+					break;				
+				case byteAtATimeCmd:
+					break;				
+				case kByteAtATimeCmd:
+					break;				
+				case noMoreCommands:
+					noMoreCommands = true;
+					break;				
 		}
 
 		// close socket		

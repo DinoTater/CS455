@@ -2,7 +2,7 @@
 // CS 455
 // Project 1: Protocols and Encodings
 
-#include "header.h"
+#include "project1.h"
 
 // Receives from socket until newline.
 int recv_all(int sockfd, char* buf, size_t len, int flags)
