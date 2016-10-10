@@ -62,10 +62,10 @@ int client_init(char *argv[])
 // MAIN
 main(int argc, char *argv[ ])
 {
-	int n;                             // num bytes sent/recvd
+	int n, i, msgLen, flag = 0;                             // num bytes sent/recvd
 	uint16_t passlen, final_msglen, nbo;
 	char inbuf[MAX];                   // multipurpose inbuffer
-	char command[], msg[];
+	char command[128], msg[MAX], resp[MAX];
 
 	if (argc < 3)
 	{
@@ -92,30 +92,64 @@ main(int argc, char *argv[ ])
 		}
 
 		// Run calls here
-		while (!noMoreCommands)
+		while (!flag)
 		{
 			printf("cmd: ");
 			bzero(command, MAX);
 			fgets(command, MAX, stdin);
 
-			switch(command):
+			command[strlen(command)-1] = '\0';
+
+			for (i=0; i < CMD_COUNT; i++)
+			{
+				printf("%s\n", commandNames[i]);
+				if(!strcmp(command, commandNames[i]))
+					break;
+			}
+			
+			/*n = atoi(commands[i].arg);
+			c = &n;
+			printf("%c%c%c%c\n", *c, *(c+1), *(c+2), *(c+3));
+			n = htonl(n);
+			printf("%c%c%c%c\n", *c, *(c+1), *(c+2), *(c+3));*/
+			strcpy(msg, commands[i].arg);
+			msgLen = strlen(msg);
+			
+			switch(i):
 				case nullTerminatedCmd:
-					send(sock, echoString, echoStringLen, 0)
+					msg[strlen(msg)-1] = '\0';
+					send_all(sock, msg, strlen(msg), 0);
+					n = recv(sock, resp, MAX, 0);
 					break;
 				case givenLengthCmd:
-					send(sock, echoString, echoStringLen, 0)
-					break;				
+					// Need to use 16 bit number
+					send_all(sock, msg, msgLen, 0);
+					send_all(sock, msg, msgLen, 0);
+					n = recv(sock, resp, MAX, 0);
+					break;
 				case badIntCmd:
+					n = stoi(commands[i].arg);
+					write(sock, n, 4);
+					n = recv(sock, resp, MAX, 0);
 					break;				
 				case goodIntCmd:
+					n = stoi(commands[i].arg);
+					write(sock, htonl(n), 4);
+					n = recv(sock, resp, MAX, 0);
 					break;				
 				case byteAtATimeCmd:
+					/*send_all(sock, msg, 1, 0);
+					while (msgLen)
+					{
+						send_all(sock, msg + 1, 1, 0);
+						msgLen--;
+					}*/
 					break;				
 				case kByteAtATimeCmd:
 					break;				
 				case noMoreCommands:
-					noMoreCommands = true;
-					break;				
+					flag = 1;
+					break;
 		}
 
 		// close socket		

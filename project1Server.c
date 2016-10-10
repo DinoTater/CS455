@@ -109,25 +109,30 @@ main(int argc, char *argv[])
             ntohs(cli_addr.sin_port));
      	printf("-----------------------------------------------\n");
 
+     	// send welcome msg as newline terminated string
+     	printf("Creating and sending welcome msg...");
+     	msg = "Welcome";
+
+     	bzero(outbuf, MAX);  
+     	strncpy(outbuf, msg, strlen(msg));
+     	outbuf[strlen(msg)] = '\n';
+
+     	n = send_all(comsock, outbuf, strlen(outbuf), 0);  
+     	printf(" %d bytes sent\n", n);
+
      	// while still talking to client
      	while(1)
      	{
-	     	// send welcome msg as newline terminated string
-	     	printf("Creating and sending welcome msg...");
-	     	msg = "Welcome";
 
-	     	bzero(outbuf, MAX);  
-	     	strncpy(outbuf, msg, strlen(msg));
-	     	outbuf[strlen(msg)] = '\n';
-
-	     	n = send_all(comsock, outbuf, strlen(outbuf), 0);  
-	     	printf(" %d bytes sent\n", n);
 
 			// close connection
 			close(comsock);
 
 			break;
      	}
+
+     	// close connection
+		close(comsock);
 	}
 
     return 0;

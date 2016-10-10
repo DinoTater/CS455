@@ -16,7 +16,7 @@ int recv_all(int sockfd, char* buf, size_t len, int flags)
 		n = recv(sockfd, onebuf, 1, flags);   // recv one character at a time
 		if (n <= 0 || onebuf[0] == '\n')
 		{
-			break;
+			break;	
 		}
 		buf[i++] = onebuf[0]; 
 		len--;

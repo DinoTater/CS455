@@ -20,6 +20,7 @@
 #define MAX 1024
 #define QUEUE_MAX 5   // max waiting clients
 #define DB_SIZE 3
+#define CMD_COUNT 7
 
 typedef struct {
 unsigned cmd;
@@ -36,13 +37,13 @@ char *arg;
 
 /* This is the list of commands to be run by the client to demonstrate your program */
 static command commands[] = {
+{noMoreCommands, ""},
 {nullTerminatedCmd, "Sent as a null-terminated string"},
 {givenLengthCmd, "Sent as an unterminated string"},
 {badIntCmd, "20160919"},
 {goodIntCmd, "20160919"},
 {byteAtATimeCmd, "500000"},
-{kByteAtATimeCmd, "500000"},
-{noMoreCommands, ""}
+{kByteAtATimeCmd, "500000"}
 };
 /*
 * These command names are to be prefixed to responses by the server; the array is
